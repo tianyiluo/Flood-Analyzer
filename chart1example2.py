@@ -46,11 +46,11 @@ GDP_data = GDP_country.values[239,0:9]
 
 # Assuming a 1.5-year flood has the same damage level as a 2-year flood does. Add to the
 # beginning of the array
-GDP_data_add_temp = np.insert(GDP_data,0,GDP_country.values[143,0])
+GDP_data_add_temp = np.insert(GDP_data,0,GDP_country.values[239,0])
 
 # Assuming a 1000000-year flood has the same damage level as a 1000-year flood does. Add
 # to the end of the array
-GDP_data_add = np.array(np.append(GDP_data_add_temp,GDP_country.values[143,8]),dtype=np.float)[::-1]
+GDP_data_add = np.array(np.append(GDP_data_add_temp,GDP_country.values[239,8]),dtype=np.float)[::-1]
 
 # Generate flood damage levels for all return periods using linear interpolation
 GDP_interp = np.interp(prob1m_1p5,prob_data,GDP_data_add)
