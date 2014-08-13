@@ -30,7 +30,7 @@ prob1m_1p5 = prob1p5_1m[::-1]
 
 
 ######## CHART 1 Example 2 in Aqueduct Flood Risk Database Dictionary 072414.xlsx ########
-
+print "Chart 1"
 
 # Load GDP_flood_risk_exposure_by_country.csv
 GDP_country_path = r"C:\Users\tianyi.luo\Dropbox\WRI\Aqueduct\Flood Risk Tool\Wiredcraft\Data for Wiredcraft\GDP_flood_risk_exposure_by_country.csv"
@@ -90,34 +90,64 @@ print "Annual Expected Affected GDP", GDP_trapz_new
 print "Annual Avoided Affected GDP", GDP_loss_avoided
 
 ###################################### CHART 2 #########################################
+print "Chart 2"
+# "Optimistic (OPT)" (rcp45 + ssp2) 1
+# "Business as Usual(BAU)" (rcp85 + ssp2) 2
+# "Pessimistic (PES)" (rcp85 + ssp3) 3
 
-# Say user chooses "Business as Usual(BAU)" Scenario (rcp8p5 + ssp2)
+# Say user chooses "Business as Usual(BAU)" Scenario (rcp8p5 + ssp2) 2
+FutureScenario = 2
+
+if FutureScenario == 1:
+    Fcolstart = 9
+    Fcolend = 18
+    Ccolstart = 36
+    Ccolend = 45
+    Scolstart = 54
+    Scolend = 63
+    print "Future Scenario: Optimistic"
+elif FutureScenario == 2:
+    Fcolstart = 18
+    Fcolend = 27
+    Ccolstart = 45
+    Ccolend = 54
+    Scolstart = 54
+    Scolend = 63
+    print "Future Scenario: Business as Usual"
+elif FutureScenario == 3:
+    Fcolstart = 27
+    Fcolend = 36
+    Ccolstart = 45
+    Ccolend = 54
+    Scolstart = 63
+    Scolend = 72
+    print "Future Scenario: Pessimistic"
 
 # BAU flood risk (similar naming convention and same methodology as current flood risk)
-GDP_data_BAU = GDP_country.values[countryID,18:27]
-GDP_data_BAU_add_temp = np.insert(GDP_data_BAU,0,GDP_country.values[countryID,18])
-GDP_data_BAU_add = np.array(np.append(GDP_data_BAU_add_temp,GDP_country.values[countryID,26]),dtype=np.float)[::-1]
+GDP_data_BAU = GDP_country.values[countryID,Fcolstart:Fcolend]
+GDP_data_BAU_add_temp = np.insert(GDP_data_BAU,0,GDP_country.values[countryID,Fcolstart])
+GDP_data_BAU_add = np.array(np.append(GDP_data_BAU_add_temp,GDP_country.values[countryID,(Fcolend-1)]),dtype=np.float)[::-1]
 GDP_BAU_interp = np.interp(prob1m_1p5,prob_data,GDP_data_BAU_add)
 
 
 # Climate change only flood risk (similar naming convention and same methodology as current flood risk)
 # Note: because user chose BAU which consists of rcp8p5 and ssp2, so here we are using columns of -
 # climate_change_only_XXyearflood_base_rcp8p5 
-GDP_data_CC = GDP_country.values[countryID,45:54]
-GDP_data_CC_add_temp = np.insert(GDP_data_CC,0,GDP_country.values[countryID,45])
-GDP_data_CC_add = np.array(np.append(GDP_data_CC_add_temp,GDP_country.values[countryID,53]),dtype=np.float)[::-1]
+GDP_data_CC = GDP_country.values[countryID,Ccolstart:Ccolend]
+GDP_data_CC_add_temp = np.insert(GDP_data_CC,0,GDP_country.values[countryID,Ccolstart])
+GDP_data_CC_add = np.array(np.append(GDP_data_CC_add_temp,GDP_country.values[countryID,(Ccolend-1)]),dtype=np.float)[::-1]
 GDP_CC_interp = np.interp(prob1m_1p5,prob_data,GDP_data_CC_add)
 
 
 # Socio-economic change only flood risk (similar naming convention and same methodology as current flood risk)
 # Note: because user chose BAU which consists of rcp8p5 and ssp2, so here we are using columns of
 # socio_econ_change_only_XXyearflood_ssp2_historical 
-GDP_data_SEC = GDP_country.values[countryID,54:63]
-GDP_data_SEC_add_temp = np.insert(GDP_data_SEC,0,GDP_country.values[countryID,54])
-GDP_data_SEC_add = np.array(np.append(GDP_data_SEC_add_temp,GDP_country.values[countryID,62]),dtype=np.float)[::-1]
+GDP_data_SEC = GDP_country.values[countryID,Scolstart:Scolend]
+GDP_data_SEC_add_temp = np.insert(GDP_data_SEC,0,GDP_country.values[countryID,Scolstart])
+GDP_data_SEC_add = np.array(np.append(GDP_data_SEC_add_temp,GDP_country.values[countryID,(Scolend-1)]),dtype=np.float)[::-1]
 GDP_SEC_interp = np.interp(prob1m_1p5,prob_data,GDP_data_SEC_add)
 
-# Essentially, what I wanted to do from line 126 through 164 is to, 1) find the damage of the magnitude of flood
+# Essentially, what I wanted to do from line 156 through 183 is to, 1) find the damage of the magnitude of flood
 # that is currently protected (use current flood protection level as the x-value and the current loss - probability curve
 # to locate the y-value which is the damage), 2) find what the magnitude of flood that will cause the same damage is in
 # the future (use the damage as the y-value and the BAU loss - probability curve to locate the x-value which is the
@@ -137,7 +167,7 @@ for i in range(999999):
 # New probability array which has probabilities from 0.000001 through the future flood protection level
 prob1m_1p5_BAU_new = prob1m_1p5[0:input_FFPL_prob_index+1]
 # BAU flood damage levels for new return periods using linear interpolation
-GDP_BAU_interp_new = GDP_interp[0:input_FFPL_prob_index+1]
+GDP_BAU_interp_new = GDP_BAU_interp[0:input_FFPL_prob_index+1]
 # Estimate BAU expected affected gdp using trapezoidal integration
 GDP_BAU_trapz_new = np.trapz(GDP_BAU_interp_new,prob1m_1p5_BAU_new)
 
@@ -149,7 +179,7 @@ for i in range(999999):
         num_comp = abs(GDP_CC_interp[i] - GDP_interp[input_CFPL_prob_index])
         input_FFPL_prob_index = i
 prob1m_1p5_CC_new = prob1m_1p5[0:input_FFPL_prob_index+1]
-GDP_CC_interp_new = GDP_interp[0:input_FFPL_prob_index+1]
+GDP_CC_interp_new = GDP_CC_interp[0:input_FFPL_prob_index+1]
 GDP_CC_trapz_new = np.trapz(GDP_CC_interp_new,prob1m_1p5_CC_new)
 
 # Similar as above, calculating socio-econonic change only expected affected gdp
@@ -160,7 +190,7 @@ for i in range(999999):
         num_comp = abs(GDP_SEC_interp[i] - GDP_interp[input_CFPL_prob_index])
         input_FFPL_prob_index = i
 prob1m_1p5_SEC_new = prob1m_1p5[0:input_FFPL_prob_index+1]
-GDP_SEC_interp_new = GDP_interp[0:input_FFPL_prob_index+1]
+GDP_SEC_interp_new = GDP_SEC_interp[0:input_FFPL_prob_index+1]
 GDP_SEC_trapz_new = np.trapz(GDP_SEC_interp_new,prob1m_1p5_SEC_new)
 
 
