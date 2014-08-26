@@ -153,6 +153,9 @@ GDP_SEC_interp = np.interp(prob1m_1p5,prob_data,GDP_data_SEC_add)
 # the future (use the damage as the y-value and the BAU loss - probability curve to locate the x-value which is the
 # magnitude of the future flood event), and 3) calculate estimated 2030 expected annual affected GDP.
 
+
+'''
+####################### OLDER VERSION #######################
 # define a initial value of the difference
 num_comp = long(100000000000000000)
 # define a initial value of the index of the found future flood magnitude
@@ -170,6 +173,8 @@ prob1m_1p5_BAU_new = prob1m_1p5[0:input_FFPL_prob_index+1]
 GDP_BAU_interp_new = GDP_BAU_interp[0:input_FFPL_prob_index+1]
 # Estimate BAU expected affected gdp using trapezoidal integration
 GDP_BAU_trapz_new = np.trapz(GDP_BAU_interp_new,prob1m_1p5_BAU_new)
+'''
+
 
 # Similar as above, calculating climate change only expected affected gdp
 num_comp = long(100000000000000000)
@@ -182,16 +187,16 @@ prob1m_1p5_CC_new = prob1m_1p5[0:input_FFPL_prob_index+1]
 GDP_CC_interp_new = GDP_CC_interp[0:input_FFPL_prob_index+1]
 GDP_CC_trapz_new = np.trapz(GDP_CC_interp_new,prob1m_1p5_CC_new)
 
+
+
+# BAU flood damage levels for new return periods using linear interpolation
+GDP_BAU_interp_new = GDP_BAU_interp[0:input_FFPL_prob_index+1]
+# Estimate BAU expected affected gdp using trapezoidal integration
+GDP_BAU_trapz_new = np.trapz(GDP_BAU_interp_new,prob1m_1p5_CC_new)
+
 # Similar as above, calculating socio-econonic change only expected affected gdp
-num_comp = long(100000000000000000)
-input_FFPL_prob_index = int(100000000000000000)
-for i in range(999999):
-    if abs(GDP_SEC_interp[i] - GDP_interp[input_CFPL_prob_index]) <= num_comp:
-        num_comp = abs(GDP_SEC_interp[i] - GDP_interp[input_CFPL_prob_index])
-        input_FFPL_prob_index = i
-prob1m_1p5_SEC_new = prob1m_1p5[0:input_FFPL_prob_index+1]
-GDP_SEC_interp_new = GDP_SEC_interp[0:input_FFPL_prob_index+1]
-GDP_SEC_trapz_new = np.trapz(GDP_SEC_interp_new,prob1m_1p5_SEC_new)
+GDP_SEC_interp_new = GDP_SEC_interp[0:input_CFPL_prob_index+1]
+GDP_SEC_trapz_new = np.trapz(GDP_SEC_interp_new,prob1m_1p5_new)
 
 
 # Theoretically, there are 8 possible results (2 options * 2 options * 2 options). Below works as the
@@ -247,6 +252,7 @@ else:
             print "Decrease due to socio-economic change", (GDP_SEC_trapz_new/(GDP_CC_trapz_new+GDP_SEC_trapz_new))*(GDP_trapz_new - GDP_BAU_trapz_new)
             print "Decrease due to climate change", (GDP_CC_trapz_new/(GDP_CC_trapz_new+GDP_SEC_trapz_new))*(GDP_trapz_new - GDP_BAU_trapz_new)
             print "2030 Annual Expected Affected GDP", GDP_BAU_trapz_new
+
 
 
 
